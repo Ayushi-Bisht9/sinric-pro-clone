@@ -25,8 +25,12 @@ export const Rooms: React.FC = () => {
   const { rooms, devices, toggleAllDevicesInRoom } = useApp();
 
   const getRoomDevices = (roomName: string) => {
-    return devices.filter(d => d.room === roomName);
-  };
+  return devices.filter(
+    d => d.room?.toLowerCase().trim() ===
+      roomName.toLowerCase().trim()
+  );
+};
+
 
   const getRoomStats = (roomName: string) => {
     const roomDevices = getRoomDevices(roomName);

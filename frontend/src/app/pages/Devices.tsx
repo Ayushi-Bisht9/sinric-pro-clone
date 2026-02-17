@@ -4,17 +4,34 @@ import { DeviceCard } from '@/app/components/DeviceCard';
 import { Search, SlidersHorizontal } from 'lucide-react';
 
 export const Devices: React.FC = () => {
-  const { devices } = useApp();
+  const { devices, addDevice } = useApp();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
+  // ✅ NEW STATE FOR ADD DEVICE
+  const [newName, setNewName] = useState('');
+  const [newType, setNewType] = useState('light');
+  const [newRoom, setNewRoom] = useState('Living Room');
+
+  const handleAddDevice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newName.trim()) return;
+
+    await addDevice(newName, newType, newRoom);
+
+    setNewName('');
+  };
+
   const filteredDevices = devices.filter(device => {
-    const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         device.room.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      device.room.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesType = filterType === 'all' || device.type === filterType;
     const matchesStatus = filterStatus === 'all' || device.status === filterStatus;
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -30,6 +47,51 @@ export const Devices: React.FC = () => {
       {/* Search and Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
         <div className="flex flex-col md:flex-row gap-4">
+
+          {/* ✅ NEW ADD DEVICE FORM (Styling kept consistent) */}
+          <form onSubmit={handleAddDevice} className="flex flex-col md:flex-row gap-3">
+
+            <input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Device name"
+              className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+              required
+            />
+
+            <select
+              value={newType}
+              onChange={(e) => setNewType(e.target.value)}
+              className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+            >
+              <option value="light">Light</option>
+              <option value="fan">Fan</option>
+              <option value="ac">AC</option>
+              <option value="tv">TV</option>
+              <option value="switch">Switch</option>
+            </select>
+
+            <select
+              value={newRoom}
+              onChange={(e) => setNewRoom(e.target.value)}
+              className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white"
+            >
+              <option value="Living Room">Living Room</option>
+              <option value="Bedroom">Bedroom</option>
+              <option value="Kitchen">Kitchen</option>
+              <option value="Garage">Garage</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Hallway">Hallway</option>
+            </select>
+
+            <button
+              type="submit"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition"
+            >
+              + Add Device
+            </button>
+          </form>
+
           {/* Search */}
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
